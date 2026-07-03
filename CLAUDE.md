@@ -7,17 +7,17 @@ Offline-first POS & stock management for Zimbabwean SMEs (Yoco Counter model, Zi
 ## Programme state
 
 - Process: **strictly sequential phases with review gates.** Never begin the next phase without MGX's explicit gate approval.
-- Current gate: **GATE 1 — PRD v2.x review.** Phases 2–8 pending.
-- Platform plan: release-train recommendation (PRD §13, Option B) — R1 Android phone+tablet → R1.5 web dashboard/analytics → R2 desktop → R3 customer portal → R4 iOS. *Confirm at Gate 1.*
+- Current gate: **GATE 1 — PRD v2.1 approved (2026-07-04).** Phase 2 may begin on MGX approval.
+- Platform plan: release-train Option B (adopted Gate 1) — R1 Android phone+tablet → R1.5 web dashboard/analytics → R2 desktop → R3 customer portal → R4 iOS.
 
-## Pending Gate 1 decisions (fill in with outcomes + date)
+## Gate 1 decisions (resolved 2026-07-04)
 
-1. Release train Option B adopted? —
-2. Credit book (FR-E2) promoted to R1 Must? —
-3. Customer portal job-to-be-done (for R3 mini-PRD)? —
-4. This PRD formally supersedes Shop-Flow/Boss Kuku scope? —
-5. VAT/tax line needed for pilot merchants? —
-6. Multi-store: schema now, feature R2 — confirmed? —
+1. Release train Option B adopted? — **Yes.** R1 Android → R1.5 web dashboard → R2 desktop → R3 customer portal → R4 iOS.
+2. Credit book (FR-E2) promoted to R1 Must? — **No.** Deferred to a future release. Stays Should.
+3. Customer portal job-to-be-done (for R3 mini-PRD)? — **Receipts lookup + credit statements.** Token-authenticated, no customer login. Mini-PRD at R3.
+4. This PRD formally supersedes Shop-Flow/Boss Kuku scope? — **Yes.** Tengesa is the product identity. v1 archive is source material only.
+5. VAT/tax line needed for pilot merchants? — **No, deferred post-R1.** Rate corrected to 15.5%. Most pilot merchants unregistered.
+6. Multi-store: schema now, feature R2 — confirmed? — **Yes.** `store_id` on key tables from Phase 4; UI is single-store in R1.
 
 ## Golden rules (binding on all code, all phases)
 
@@ -61,4 +61,4 @@ Works in airplane mode → unit tests on money/stock/rate math → outbox rows v
 ## Decisions log
 
 - 2026-07: Programme restructured to 8-phase sequential brief (master plan v2). v1 doc pack archived as source material. Competitive wedge confirmed: free inventory + staff management (Loyverse charges) + dual-currency (nobody has) + true offline-first.
-<!-- append: YYYY-MM-DD — decision — rationale -->
+- 2026-07-04: Gate 1 approved — PRD v2.1. Option B release train adopted. Credit book deferred (future release). Customer portal = receipts + credit statements. Tengesa identity confirmed. VAT deferred (15.5% when built). Multi-store schema day 1, feature R2.

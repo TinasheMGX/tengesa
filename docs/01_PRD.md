@@ -1,8 +1,9 @@
 # Product Requirements Document — Tengesa POS
-**Version:** 2.0 · **Owner:** MGX · **Status:** Draft for Gate 1 review · **Phase:** 1 of 8
+**Version:** 2.1 · **Owner:** MGX · **Status:** Gate 1 approved · **Phase:** 1 of 8
 
 | Changelog | |
 |---|---|
+| v2.1 (Jul 2026) | Gate 1 decisions applied: Option B release train adopted; credit book (FR-E2) deferred; customer portal scoped to receipts + credit statements; Tengesa identity confirmed (Shop-Flow/Boss Kuku superseded); VAT (FR-C9) deferred, rate corrected to 15.5%; multi-store schema day 1, feature R2 confirmed. §13, §17, §18 updated. QA-reviewer audit: 5 BLOCKERs fixed (permission matrix, performance baselines, LWW spec, cash-up dual-currency formula); 8 WARNINGs tightened |
 | v2.0 (Jul 2026) | Full restructure to programme brief: added Mission, Business Goals, User Stories, Acceptance Criteria, Competitive Analysis, MoSCoW, platform options analysis; expanded FR/NFR coverage to all schema entities |
 | v1.0 (Jul 2026) | Initial PRD |
 
@@ -70,9 +71,9 @@ The result: no product serves the Zimbabwean small trader's actual day. Tengesa 
 Grouped by module; IDs are stable and referenced by user stories, tests and MoSCoW. (M) = MVP.
 
 **FR-A Authentication & staff**
-- FR-A1 (M) Owner registers/signs in (email+password; Google OAuth optional); full offline trial mode before account creation.
+- FR-A1 (M) Owner registers/signs in (email+password; Google OAuth optional); full offline trial mode before account creation (no feature limits, no time limit; trial data migrates into created account).
 - FR-A2 (M) Staff profiles with name, 4-digit PIN, role ∈ {cashier, supervisor, admin}; fast on-screen switching.
-- FR-A3 (M) Permission gates: refunds, discount > configurable %, stock adjustment, price edit, reports access, settings — enforced in the data layer.
+- FR-A3 (M) Permission matrix enforced in the data layer. Default: cashier — sell, view own sales, view stock; supervisor — adds refunds, discounts > threshold % (default 10%, merchant-configurable), stock adjustments, void sale; admin — adds price edit, reports access, staff management, settings, rate changes. Merchant may customise per-role.
 - FR-A4 (M) PIN lockout 60s after 5 failures; auto-lock after configurable idle.
 - FR-A5 Biometric unlock for owner/admin (device-supported). *(Should)*
 
@@ -86,12 +87,12 @@ Grouped by module; IDs are stable and referenced by user stories, tests and MoSC
 - FR-C1 (M) Sell screen with tile catalogue + category chips AND quick-amount keypad (Yoco dual-input pattern).
 - FR-C2 (M) Cart: quantities, line & bill discounts (value or %), sales note.
 - FR-C3 (M) Tender types as record-keeping toggles: cash_usd, cash_zwg, ecocash, zipit, card, other.
-- FR-C4 (M) Dual currency: prices stored USD; ZWG derived from merchant-set active rate; tender in either; cross-currency change calculation; rate used stored on every sale.
-- FR-C5 (M) Atomic completion: sale + lines + payment(s) + stock movements + outbox in one local transaction; completes in ≤150 ms; ≤6 taps for a one-item cash sale.
-- FR-C6 (M) Saved/open bills (park & resume, named).
+- FR-C4 (M) Dual currency: prices stored USD cents; ZWG derived from merchant-set active rate, rounded to nearest 0.05 ZWG (commercial rounding — 0.025 rounds up). A single tender in any one currency; change calculated in tendered currency by default, cashier may toggle (mixed-currency tenders within one sale require FR-C8, Could). Every sale stores `fx_rate_used` = active rate at moment of completion, regardless of tender currency. Rounding differences absorbed by merchant.
+- FR-C5 (M) Atomic completion: sale + lines + payment(s) + stock movements + outbox in one local transaction. Local commit ≤150 ms on reference device (2 GB RAM, Android 10, 1,000 SKUs, 10,000 historical sales). One-item cash sale from sell screen to completion: ≤6 taps (tile → tender → done).
+- FR-C6 (M) Saved/open bills (park & resume, named). No hard limit on concurrent parked bills; survive end-of-day and app restart; device-local until completed (then synced as a sale).
 - FR-C7 (M) Receipt: branded, unique human number, shareable as image via Android share sheet (WhatsApp/SMS).
 - FR-C8 Split tender across methods; tips. *(Could — v1.1)*
-- FR-C9 Simple tax line (e.g. VAT 15% toggle per merchant/product) shown on receipt. *(Should)*
+- FR-C9 Simple tax line (e.g. VAT 15.5% toggle per merchant/product) shown on receipt. *(Should — deferred post-R1, Gate 1)*
 
 **FR-D Stock & purchasing**
 - FR-D1 (M) Stock as append-only movement log (opening, sale, refund-restock, received, damaged, count-correction); on-hand always derived.
@@ -101,7 +102,7 @@ Grouped by module; IDs are stable and referenced by user stories, tests and MoSC
 
 **FR-E Customers & credit**
 - FR-E1 Customer records (name, phone); attach to sale. *(Should)*
-- FR-E2 Credit book ("chikwereti"): sell on account, record repayments, balance & statement per customer. *(Should — pilot-critical, see §17 Q2)*
+- FR-E2 Credit book ("chikwereti"): sell on account, record repayments, balance & statement per customer. *(Won't — R1; deferred to future release, Gate 1)*
 
 **FR-F History & refunds**
 - FR-F1 (M) Searchable/filterable sales history; sale detail with timeline (created → synced → refunded).
@@ -110,19 +111,19 @@ Grouped by module; IDs are stable and referenced by user stories, tests and MoSC
 
 **FR-G Reports & cash management**
 - FR-G1 (M) Periods: today/week/month/custom. Totals, count, average sale, gross margin; breakdowns by tender, product, category, staff.
-- FR-G2 (M) End-of-day cash-up per currency: float + cash sales − cash refunds − payouts = expected; counted vs variance with note; shareable Z-report.
+- FR-G2 (M) End-of-day cash-up runs independently per physical cash pool (USD and ZWG). Formula per pool: opening float + cash-in (sales tendered in that currency + paid-in) − cash-out (refunds tendered in that currency + paid-out) = expected. Cross-currency tenders affect only the pool of the currency actually received. Each pool records counted vs expected with mandatory variance note. Z-report covers both pools with totals by tender, staff and category.
 - FR-G3 (M) All reports computable fully offline from local data.
 - FR-G4 Cash drawer events (paid-in/paid-out with reasons) feeding G2. *(Should)*
 
 **FR-H Offline & sync**
 - FR-H1 (M) 100% functionality with zero connectivity, indefinitely; local DB survives updates/restarts.
-- FR-H2 (M) Background sync on connectivity/foreground/manual; batched, idempotent (replay-safe); visible status (pending count, last synced).
-- FR-H3 (M) Multi-device on one merchant: catalogue/settings converge (LWW + audit); sales append-only; stock merges additively.
+- FR-H2 (M) Sync triggers: (1) on network connectivity gained (debounced 5 s), (2) on app foreground if >60 s since last sync, (3) manual pull-to-refresh. Backoff after 3 consecutive failures. Batched, idempotent (replay-safe); visible status (pending count, last synced).
+- FR-H3 (M) Multi-device on one merchant: catalogue/settings converge via LWW using server-received timestamp (not device clock). Losing write preserved in audit log with winning value, losing value, both timestamps, and both device IDs. Sales append-only (never merged). Stock movements merge additively (SUM of all qty_delta from all devices).
 - FR-H4 (M) Device registration; restore full state to a new device from cloud.
 - FR-H5 Multi-store: store entity, per-store stock and reporting. *(Won't — MVP; R2 roadmap; schema allows from day 1)*
 
 **FR-I Administration & audit**
-- FR-I1 (M) Business settings: profile/logo, receipt footer, ZWG rate (versioned), tender toggles, thresholds.
+- FR-I1 (M) Business settings: profile/logo, receipt footer, ZWG rate (versioned — each change creates a timestamped audit entry with old/new values, staff who changed it; rates apply to future sales only, never backdated), tender toggles, thresholds.
 - FR-I2 (M) Immutable audit log: refunds, discounts>threshold, price changes, stock adjustments, rate changes, staff changes — synced.
 - FR-I3 (M) Data export escape hatch (sales + catalogue CSV/JSON) — no lock-in.
 - FR-I4 (M) Account & data deletion path (in-app + web) per Play policy.
@@ -131,8 +132,8 @@ Grouped by module; IDs are stable and referenced by user stories, tests and MoSC
 
 | # | Requirement | Target |
 |---|---|---|
-| NFR-1 Performance | Cold start ≤3 s on 2 GB device; 1,000-SKU catalogue at 60 fps; local sale commit ≤150 ms |
-| NFR-2 Offline | Indefinite; sync queue bounded only by storage; zero data loss on power cut mid-operation |
+| NFR-1 Performance | Cold start (process killed → sell screen interactive, measured via `reportFullyDrawn()`) ≤3 s on reference device (2 GB RAM, Android 10, eMMC storage, 1,000 SKUs); catalogue scroll at 60 fps; local sale commit ≤150 ms on same reference device |
+| NFR-2 Offline | Indefinite; sync queue bounded only by storage; zero loss of committed data on power cut (any committed SQLite transaction is durable; in-flight cart state persisted to local storage on each modification for recovery, but an uncommitted cart is not counted as data loss) |
 | NFR-3 Reliability | Crash-free sessions ≥99.5%; atomicity proven by kill-mid-write tests |
 | NFR-4 Security | Encrypted local DB; hashed PINs; RLS on all cloud tables; OWASP MASVS-L1 baseline (Phase 6) |
 | NFR-5 Scalability | Architecture serves 10k merchants on one Postgres before sharding decisions; per-merchant data isolation by design |
@@ -221,6 +222,7 @@ Then expected shows $150.50
 And entering counted $148.50 records variance −$2.00 with a required note
 And the Z-report image includes totals by tender, staff and category for the business date
 ```
+*Symmetric scenario applies for ZWG pool. Cross-currency tender (e.g. ZWG payment for USD-priced sale) affects only the ZWG cash pool.*
 
 ## 12. Success metrics
 
@@ -242,10 +244,10 @@ The brief lists Android phones, tablets, web dashboard, desktop, customer portal
 | Option | Contents of "Release 1" | Est. duration | Risk |
 |---|---|---|---|
 | **A — Everything at once** | All six targets | 9–14 months to *first* ship | High: no user feedback for a year; portal has no defined job; motivation/decay risk |
-| **B — Release train (RECOMMENDED)** | R1 = Android phone+tablet POS to Play Store (3–4 months); R1.5 = web dashboard + merchant analytics, read-only→manage (+4–6 wks); R2 = desktop as installable PWA/Tauri wrap of the web dashboard (+1–2 wks); R3 = customer portal (own mini-PRD first); R4 = iOS | First ship in 3–4 months; full brief in ~7–9 months | Low: feedback compounds; each train reuses the last (shared TS core + design system) |
+| **B — Release train (ADOPTED — Gate 1)** | R1 = Android phone+tablet POS to Play Store (3–4 months); R1.5 = web dashboard + merchant analytics, read-only→manage (+4–6 wks); R2 = desktop as installable PWA/Tauri wrap of the web dashboard (+1–2 wks); R3 = customer portal (own mini-PRD first); R4 = iOS | First ship in 3–4 months; full brief in ~7–9 months | Low: feedback compounds; each train reuses the last (shared TS core + design system) |
 | **C — Ultra-lean pilot** | Phone-only APK sideloaded to 5 merchants | 6–8 weeks | Fastest learning; defers Play/tablet work that must happen anyway |
 
-**Recommendation: B**, with C's spirit inside it (closed-testing track = pilot). Trade-off accepted: web/desktop/portal users wait one train; in exchange R1 quality and learning velocity are protected. "Merchant analytics" is delivered twice: in-app Reports (R1, offline) and richer web analytics (R1.5).
+**Decision (Gate 1): B adopted**, with C's spirit inside it (closed-testing track = pilot). Trade-off accepted: web/desktop/portal users wait one train; in exchange R1 quality and learning velocity are protected. "Merchant analytics" is delivered twice: in-app Reports (R1, offline) and richer web analytics (R1.5).
 
 **MVP (R1) =** every (M) requirement in §8 on Android phone + tablet, published via closed → production tracks.
 
@@ -274,24 +276,24 @@ The brief lists Android phones, tablets, web dashboard, desktop, customer portal
 
 **Out of scope (all releases until explicitly promoted):** payment *processing* of any kind (tenders are records); PCI-scope data; hardware manufacturing/resale; accounting integrations; e-commerce storefronts; loyalty points; franchise/enterprise features; recipe-level (ingredient) inventory.
 
-## 17. Open questions for Gate 1
+## 17. Gate 1 decisions (resolved 2026-07-04)
 
-1. **Adopt Option B release train?** (Everything downstream sequences on this.)
-2. **Credit book (FR-E2): promote to MVP Must?** It is the most Zimbabwe-specific differentiator; costs ~1–2 weeks in R1.
-3. **Customer portal job-to-be-done** — receipts lookup? credit statements? Something else? (Needed before R3 mini-PRD; no R1 impact.)
-4. **Confirm product identity:** this PRD formally becomes the Tengesa spec (superseding Shop-Flow/Boss Kuku scope)?
-5. **Tax line (FR-C9):** is VAT display needed for your pilot merchants, or defer? (Most informal traders are unregistered.)
-6. **Multi-store schema now, feature later** — confirm acceptable.
+1. **Release train Option B adopted.** R1 = Android phone+tablet → R1.5 web dashboard → R2 desktop → R3 customer portal → R4 iOS.
+2. **Credit book (FR-E2) deferred.** Stays Should; not in R1. Will be implemented in a future release.
+3. **Customer portal (R3) scoped:** receipts lookup + credit statements (when credit ships). Token-authenticated links, no customer login. Full mini-PRD before R3 begins.
+4. **Product identity confirmed.** This PRD is the Tengesa spec. Shop-Flow and Boss Kuku scope formally superseded; v1 archive retained as source material only.
+5. **VAT/tax line (FR-C9) deferred.** Stays Should, post-R1. Zimbabwe VAT rate is 15.5%. Most pilot merchants are unregistered; building it now risks misleading receipts.
+6. **Multi-store: schema day 1, feature R2.** `store_id` on key tables from Phase 4; R1 UI is single-store only. Avoids painful retroactive migration.
 
 ## 18. Feature prioritisation — MoSCoW (R1 contract)
 
 | Priority | Features |
 |---|---|
 | **Must** | Owner auth + offline trial; staff PINs/roles/permission gates; audit log; products/categories/variants; CSV import/export; tile+keypad sell; cart with discounts & notes; six record-keeping tenders; dual-currency USD/ZWG with versioned rate & cross-currency change; atomic sale commit; saved bills; shareable receipts; movement-log stock; low-stock alerts; history + full/partial gated refunds; reports (periods, tender/product/category/staff, margin); end-of-day cash-up + Z-report; offline-first local DB; idempotent batched sync; multi-device convergence; device registration & restore; settings; data export; account deletion |
-| **Should** | Credit book + customers (pending Q2 — may promote to Must); camera barcode scan; stock-take mode; cash drawer paid-in/out events; VAT toggle; bulk price update; biometric owner unlock; modifiers |
+| **Should** | Customers (FR-E1); camera barcode scan; stock-take mode; cash drawer paid-in/out events; bulk price update; biometric owner unlock; modifiers |
 | **Could** | Split tender; tips; suppliers & purchases/GRV; product images bulk tools; Shona UI; receipt printer (BT) if pilot demands early |
-| **Won't (R1)** | Payment processing/integrations; web dashboard & desktop (R1.5/R2); customer portal (R3); multi-store UI (R2+; schema ready); iOS (R4); loyalty; accounting sync; recipe inventory |
+| **Won't (R1)** | Payment processing/integrations; web dashboard & desktop (R1.5/R2); customer portal (R3); multi-store UI (R2+; schema ready); iOS (R4); loyalty; accounting sync; recipe inventory; credit book (FR-E2, future release); VAT toggle (FR-C9, post-R1) |
 
 ---
 
-**Gate 1 action:** review §13 and §17, mark up anything else, and I refine to v2.1 → approved, then Phase 2 (UX & Application Flow) begins.
+**Gate 1 status:** ✓ Approved (2026-07-04). All §17 questions resolved. PRD v2.1 is the binding R1 contract. Phase 2 (UX & Application Flow) may begin.

@@ -18,8 +18,8 @@ A production-ready, **offline-first Android POS and stock management system** in
 
 | Phase | Deliverable | Repo file | Status |
 |---|---|---|---|
-| 1 | Product Requirements Document | `docs/01_PRD.md` | **Drafted — in review** |
-| 2 | UX & Application Flow (journeys, IA, flowcharts, state/error/offline/sync/auth flows) | `docs/02_UX_FLOWS.md` | Pending gate 1 |
+| 1 | Product Requirements Document | `docs/01_PRD.md` | **Gate 1 approved (v2.1, 2026-07-04)** |
+| 2 | UX & Application Flow (journeys, IA, flowcharts, state/error/offline/sync/auth flows) | `docs/02_UX_FLOWS.md` | Pending gate 2 |
 | 3 | UI/UX Design System (principles, tokens, full component spec, states, Figma structure, inspiration boards) | `docs/03_DESIGN_SYSTEM.md` | Pending |
 | 4 | Technical Architecture (stack w/ justifications, clean architecture, full DB schemas + ER, REST API design) | `docs/04_TECH_ARCHITECTURE.md` | Pending |
 | 5 | Offline-first & Sync Engine (delta sync, queues, conflict resolution, multi-device, multi-store) | `docs/05_OFFLINE_SYNC.md` | Pending |
@@ -32,7 +32,7 @@ The v1 pack's App Flow, Design, Backend, Security and Prompt documents are **sou
 
 ## 3. Platform scope decision (input to PRD §MVP)
 
-The brief targets Android phones, Android tablets, web dashboard, desktop, customer portal and merchant analytics in the first production release. Options analysis lives in `01_PRD.md §13`; the recommendation is a **release train**: R1 Android (phone+tablet) → R1.5 Web dashboard + analytics → R2 Desktop (packaged web) → R3 Customer portal → R4 iOS. The architecture is chosen so each train reuses the previous one's code (shared TypeScript core, shared design system), keeping the full brief achievable serially on this budget.
+The brief targets Android phones, Android tablets, web dashboard, desktop, customer portal and merchant analytics in the first production release. Options analysis lives in `01_PRD.md §13`; the **release train (Option B) was adopted at Gate 1**: R1 Android (phone+tablet) → R1.5 Web dashboard + analytics → R2 Desktop (packaged web) → R3 Customer portal → R4 iOS. The architecture is chosen so each train reuses the previous one's code (shared TypeScript core, shared design system), keeping the full brief achievable serially on this budget.
 
 ## 4. Documentation standards (all phases)
 
@@ -61,4 +61,6 @@ Free/open-source/self-hostable first. Supabase-class free tier for cloud (final 
 
 ## 7. Current gate
 
-**GATE 1 — PRD review.** MGX reviews `01_PRD.md` v2.0, answers its Open Questions (§17), requests refinements. On approval, Phase 2 (UX & Application Flow) begins.
+**GATE 1 — PRD review.** ✓ Approved (2026-07-04). PRD v2.1 is the binding R1 contract. All §17 open questions resolved.
+
+**GATE 2 — UX & Application Flow.** Phase 2 may begin on MGX approval.
