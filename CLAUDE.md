@@ -7,7 +7,7 @@ Offline-first POS & stock management for Zimbabwean SMEs (Yoco Counter model, Zi
 ## Programme state
 
 - Process: **strictly sequential phases with review gates.** Never begin the next phase without MGX's explicit gate approval.
-- Current gate: **GATE 1 — PRD v2.1 approved (2026-07-04).** Phase 2 may begin on MGX approval.
+- Current gate: **GATE 2 — UX & App Flow v1.0 approved (2026-07-04).** Phase 3 may begin on MGX approval.
 - Platform plan: release-train Option B (adopted Gate 1) — R1 Android phone+tablet → R1.5 web dashboard/analytics → R2 desktop → R3 customer portal → R4 iOS.
 
 ## Gate 1 decisions (resolved 2026-07-04)
@@ -62,3 +62,4 @@ Works in airplane mode → unit tests on money/stock/rate math → outbox rows v
 
 - 2026-07: Programme restructured to 8-phase sequential brief (master plan v2). v1 doc pack archived as source material. Competitive wedge confirmed: free inventory + staff management (Loyverse charges) + dual-currency (nobody has) + true offline-first.
 - 2026-07-04: Gate 1 approved — PRD v2.1. Option B release train adopted. Credit book deferred (future release). Customer portal = receipts + credit statements. Tengesa identity confirmed. VAT deferred (15.5% when built). Multi-store schema day 1, feature R2.
+- 2026-07-04: Gate 2 approved — UX & App Flow v1.0. 41 screens, 15 sections. Horizontal scroll category chips. Receipt provisional number is permanent. Z-report image-only R1. Cash-up admin-only. Void = full refund (same flow).

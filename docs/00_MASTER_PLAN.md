@@ -19,8 +19,8 @@ A production-ready, **offline-first Android POS and stock management system** in
 | Phase | Deliverable | Repo file | Status |
 |---|---|---|---|
 | 1 | Product Requirements Document | `docs/01_PRD.md` | **Gate 1 approved (v2.1, 2026-07-04)** |
-| 2 | UX & Application Flow (journeys, IA, flowcharts, state/error/offline/sync/auth flows) | `docs/02_UX_FLOWS.md` | Pending gate 2 |
-| 3 | UI/UX Design System (principles, tokens, full component spec, states, Figma structure, inspiration boards) | `docs/03_DESIGN_SYSTEM.md` | Pending |
+| 2 | UX & Application Flow (journeys, IA, flowcharts, state/error/offline/sync/auth flows) | `docs/02_UX_FLOWS.md` | **Gate 2 approved (v1.0, 2026-07-04)** |
+| 3 | UI/UX Design System (principles, tokens, full component spec, states, Figma structure, inspiration boards) | `docs/03_DESIGN_SYSTEM.md` | Pending gate 3 |
 | 4 | Technical Architecture (stack w/ justifications, clean architecture, full DB schemas + ER, REST API design) | `docs/04_TECH_ARCHITECTURE.md` | Pending |
 | 5 | Offline-first & Sync Engine (delta sync, queues, conflict resolution, multi-device, multi-store) | `docs/05_OFFLINE_SYNC.md` | Pending |
 | 6 | Security (auth, JWT/refresh strategy, encryption, PIN/biometric, OWASP MASVS, audit) | `docs/06_SECURITY.md` | Pending |
@@ -63,4 +63,6 @@ Free/open-source/self-hostable first. Supabase-class free tier for cloud (final 
 
 **GATE 1 — PRD review.** ✓ Approved (2026-07-04). PRD v2.1 is the binding R1 contract. All §17 open questions resolved.
 
-**GATE 2 — UX & Application Flow.** Phase 2 may begin on MGX approval.
+**GATE 2 — UX & Application Flow.** ✓ Approved (2026-07-04). 41 screens, all Must FRs covered, ux-architect reviewed.
+
+**GATE 3 — Design System.** Phase 3 may begin on MGX approval.
